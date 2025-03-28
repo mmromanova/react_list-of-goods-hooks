@@ -16,15 +16,17 @@ export const goodsFromServer: string[] = [
   'Garlic',
 ];
 
-const SORT_FIELD_ALP: string = 'alphabetically';
-const SORT_FIELD_LENGTH: string = 'length';
+enum SortType {
+  Alphabetically = 'alphabetically',
+  Length = 'length',
+}
 
 function getSortedGoods(goods: string[], sortField: string, reversed: boolean) {
   let sortedGoods: string[] = [...goods];
 
-  if (sortField === SORT_FIELD_ALP) {
+  if (sortField === SortType.Alphabetically) {
     sortedGoods = sortedGoods.sort((a, b) => a.localeCompare(b));
-  } else if (sortField === SORT_FIELD_LENGTH) {
+  } else if (sortField === SortType.Length) {
     sortedGoods = sortedGoods.sort((a, b) => a.length - b.length);
   }
 
@@ -42,17 +44,21 @@ export const App: React.FC = () => {
   const sortedGoods = getSortedGoods(goodsFromServer, sortField, reversed);
   const isSorted = sortField !== '' || reversed;
 
+  const handleClick = (field: string, reversedStatus = false) => {
+    setSortField(field);
+    setReversed(reversedStatus);
+  };
+
   return (
     <div className="section content">
       <div className="buttons">
         <button
           type="button"
           className={classNames('button is-info', {
-            'is-light': sortField !== SORT_FIELD_ALP,
+            'is-light': sortField !== SortType.Alphabetically,
           })}
           onClick={() => {
-            setSortField(SORT_FIELD_ALP);
-            setReversed(false);
+            handleClick(SortType.Alphabetically, false);
           }}
         >
           Sort alphabetically
@@ -61,11 +67,10 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={classNames('button is-success', {
-            'is-light': sortField !== SORT_FIELD_LENGTH,
+            'is-light': sortField !== SortType.Length,
           })}
           onClick={() => {
-            setSortField(SORT_FIELD_LENGTH);
-            setReversed(false);
+            handleClick(SortType.Length, false);
           }}
         >
           Sort by length
@@ -84,8 +89,7 @@ export const App: React.FC = () => {
             type="button"
             className="button is-danger"
             onClick={() => {
-              setSortField('');
-              setReversed(false);
+              handleClick('', false);
             }}
           >
             Reset
